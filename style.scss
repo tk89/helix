@@ -1,0 +1,123 @@
+$number-of-molecules: 10;
+$molecule-diameter: 20px;
+$width-multiplier: 10;
+$animation-duration: 1500ms;
+
+$molecule-color-1: red;
+$molecule-color-2: blue;
+$connection-color: silver;
+
+
+// ANIMATIONS
+@keyframes molecule-animation {
+  from { transform: translate3d(0, 0, 0); }
+  to { transform: translate3d(#{($molecule-diameter * $width-multiplier) - $molecule-diameter}, 0, 0); }
+}
+
+@keyframes connection-animation {
+  from { transform: scale3d(1, 1, 1); }
+  to { transform: scale3d(0, 1, 1); }
+}
+// animations end
+
+
+// RESET
+*,
+*:before,
+*:after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+body {
+  display: flex;
+  flex-flow: column;
+  width: 100vw;
+  min-height: 100vh;
+  align-items: center;
+  justify-content: center;
+  background-color: transparent;
+}
+
+main {
+  flex: 1;
+  display: flex;
+  align-items: center;
+}
+
+dna {
+  display: flex;
+  flex-flow: row nowrap;
+  width: #{$molecule-diameter * $width-multiplier};
+  position: relative;
+}
+
+column {
+  display: flex;
+  flex-flow: column;
+  
+  &:nth-of-type(3) {
+    position: absolute;
+    left: 0;
+  }
+}
+
+dot {
+  display: block;
+  width: $molecule-diameter;
+  height: $molecule-diameter;
+  margin-bottom: $molecule-diameter;
+  background-color: $molecule-color-1;
+  animation: {
+    name: molecule-animation;
+    duration: $animation-duration;
+  }
+  
+  column:nth-of-type(1) & {
+    background-color: $molecule-color-1;
+    animation-direction:
+      alternate,
+      normal;
+  }
+
+  column:nth-of-type(3) & {
+    background-color: $molecule-color-2;
+    animation-direction:
+      alternate-reverse,
+      normal;
+  }
+}
+
+dash {
+  $height: $molecule-diameter / 3;
+  
+  display: block;
+  height: $height;
+  width: #{($molecule-diameter * $width-multiplier) - ($molecule-diameter * 3)};
+  margin: {
+    top: $height;
+    bottom: #{$molecule-diameter + $height};
+    left: #{$molecule-diameter / 2};
+  }
+  border-radius: #{$height / 2};
+  background-color: $connection-color;
+  animation: {
+    name: connection-animation;
+    duration: #{$animation-duration / 2};
+    direction: alternate;
+  }
+}
+
+dot,
+dash {
+  animation: {
+    timing-function: ease-in-out;
+    iteration-count: infinite;
+  }
+  
+  @for $i from 1 through $number-of-molecules {
+    &:nth-of-type(#{$i}) {
+      animation-delay: -#{($animation-duration / $number-of-molecules) * $i};
+    }
+  }
+}
